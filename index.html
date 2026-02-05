@@ -43,21 +43,21 @@
       color: var(--night-ink);
     }
 
+    /* ios-safe texture layer: no mix-blend-mode, always behind content */
     body::before{
       content:"";
       position:fixed;
       inset:0;
       pointer-events:none;
+      z-index:-1;
       background:
         radial-gradient(circle at 30% 10%, rgba(0,0,0,.035), transparent 45%),
         radial-gradient(circle at 80% 60%, rgba(0,0,0,.03), transparent 50%),
         repeating-linear-gradient(90deg, rgba(0,0,0,.02), rgba(0,0,0,.02) 1px, transparent 1px, transparent 7px);
       opacity:.35;
-      mix-blend-mode:multiply;
     }
     body.night::before{
       opacity:.18;
-      mix-blend-mode:normal;
     }
 
     .wrap{
@@ -638,7 +638,6 @@
           body: JSON.stringify({ content: msg })
         });
       }catch{
-        
       }
     }
 
@@ -665,7 +664,6 @@
         ctx.globalCompositeOperation = "source-over";
         ctx.clearRect(0,0,W,H);
 
-        // solid light coating (no gradient)
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--scratch").trim();
         ctx.fillRect(0,0,W,H);
 
@@ -811,7 +809,6 @@
       }
 
       await notifyDiscord(c.title, ts);
-
       render();
     }
 
@@ -966,4 +963,3 @@
   </script>
 </body>
 </html>
-
