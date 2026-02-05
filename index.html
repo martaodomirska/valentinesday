@@ -21,7 +21,6 @@
       --night-paper2:#21090d;
       --night-ink:#f3e6d6;
 
-      /* scratch coating: solid (no gradient) */
       --scratch: rgba(236,224,206,.96);
     }
 
@@ -364,7 +363,6 @@
       opacity:.92;
     }
 
-    /* scratch overlay */
     .scratchLayer{
       position:absolute;
       inset:0;
@@ -496,8 +494,8 @@
     <header>
       <h1>happy valentine's day</h1>
       <p class="sub">
-        scratch a coupon to reveal it. a small scratch will unlock the whole coupon.
-        redeeming is one use only. the last coupon unlocks after you redeem the others.
+        scratch a coupon to reveal it.
+        redeeming is one use only. the last coupon unlocks after you redeem the others. have fun <3
       </p>
     </header>
 
@@ -520,7 +518,6 @@
   <script>
     const storageKey = "valentine_coupons_v6";
 
-    // treat this like a password. rotate in discord if it leaks.
     const discordWebhookUrl = "https://discord.com/api/webhooks/1468940626920865825/DKQgJ1jtS615nsA8UUwWShJT1nfPKocXkr9e15IbcUGSJVbHxwCSAyR4mQYuhIlGu7gL";
 
     const coupons = [
@@ -641,11 +638,10 @@
           body: JSON.stringify({ content: msg })
         });
       }catch{
-        // ignore errors
+        
       }
     }
 
-    // scratch overlay: fixed sizing + reliable pointer events
     function initScratch(layerEl, canvas, couponId, onReveal){
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
       const dpr = window.devicePixelRatio || 1;
@@ -673,14 +669,12 @@
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--scratch").trim();
         ctx.fillRect(0,0,W,H);
 
-        // speckles
         ctx.fillStyle = "rgba(0,0,0,.08)";
         for(let i=0;i<320;i++){
           const x = Math.random()*W, y = Math.random()*H;
           ctx.fillRect(x,y,1,1);
         }
 
-        // border
         ctx.strokeStyle = "rgba(139,11,20,.22)";
         ctx.lineWidth = 2;
         ctx.strokeRect(8,8,W-16,H-16);
@@ -776,7 +770,6 @@
         canvas.style.pointerEvents = "auto";
       }
 
-      // initialize after layout is settled
       requestAnimationFrame(() => {
         init();
         if(state[couponId].scratched){
@@ -938,7 +931,6 @@
         lockedOverlay.appendChild(lockedCard);
         card.appendChild(lockedOverlay);
 
-        // scratch overlay only if not scratched and not redeemed
         if(!scratched && !redeemed){
           const layer = document.createElement("div");
           layer.className = "scratchLayer";
@@ -974,3 +966,4 @@
   </script>
 </body>
 </html>
+
