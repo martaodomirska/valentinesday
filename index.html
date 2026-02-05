@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine Coupon Vault</title>
+  <style>
+    :root{
+      --bg: #4a0007;           /* deep red */
+      --bg2: #1b0003;          /* night mode bg */
+      --paper: #fff5f7;        /* coupon paper */
+      --ink: #2a0b10;          /* text */
+      --accent: #ff4d6d;       /* pink */
+      --accent2:#ff9bb0;       /* light pink */
+      --shadow: rgba(0,0,0,.35);
+      --edge: rgba(0,0,0,.08);
+      --muted: rgba(42,11,16,.65);
+      --danger: #ff2f55;
+      --ok: #1c8f4a;
+      --radius: 18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+    }
+
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x:hidden;
+      transition: background .45s ease, color .45s ease;
+    }
+
+    body.night{
+      background: var(--bg2);
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 80px;
+    }
+
+    header{
+      text-align:center;
+      padding: 18px 0 22px;
+    }
+
+    .kicker{
+      letter-spacing:.18em;
+      text-transform: uppercase;
+      font-size: 12px;
+      opacity:.85;
+    }
+
+    h1{
+      font-family: var(--serif);
+      margin: 10px 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.08;
+    }
+
+    .sub{
+      max-width: 720px;
+      margin: 0 auto;
+      color: rgba(255,255,255,.85);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .hint{
+      margin-top: 12px;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      background: rgba(0,0,0,.18);
+      backdrop-filter: blur(6px);
+      font-size: 13px;
+      color: rgba(255,255,255,.88);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 26px;
+    }
+
+    .coupon{
+      grid-column: span 6;
+      position: relative;
+      border-radius: var(--radius);
+      box-shadow: 0 14px 38px var(--shadow);
+      background: var(--paper);
+      color: var(--ink);
+      overflow:hidden;
+      transform: translateZ(0);
+    }
+
+    @media (max-width: 900px){
+      .coupon{ grid-column: span 12; }
+    }
+
+    /* Coupon perforation effect */
+    .coupon::before, .coupon::after{
+      content:"";
+      position:absolute;
+      left:0; right:0;
+      height: 18px;
+      background:
+        radial-gradient(circle at 12px 9px, transparent 8px, var(--paper) 8.2px) repeat-x;
+      background-size: 24px 18px;
+      opacity: 1;
+      pointer-events:none;
+      z-index: 1;
+    }
+    .coupon::before{ top:-9px; }
+    .coupon::after{ bottom:-9px; transform: rotate(180deg); }
+
+    /* inner border + paper grain */
+    .coupon .inner{
+      position: relative;
+      padding: 18px 18px 16px;
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      margin: 14px;
+      background:
+        linear-gradient(0deg, rgba(0,0,0,.03), rgba(0,0,0,0)),
+        radial-gradient(circle at 20% 10%, rgba(255,77,109,.08), transparent 40%),
+        radial-gradient(circle at 85% 40%, rgba(255,155,176,.10), transparent 45%),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.012), rgba(0,0,0,.012) 1px, transparent 1px, transparent 6px);
+      overflow:hidden;
+    }
+
+    .row{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      min-width: 0;
+    }
+
+    .emoji{
+      width: 38px;
+      height: 38px;
+      display:grid;
+      place-items:center;
+      border-radius: 12px;
+      background: rgba(255,77,109,.14);
+      border: 1px solid rgba(255,77,109,.20);
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .name{
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.15;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tag{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .meta{
+      text-align:right;
+      font-size: 12px;
+      color: rgba(42,11,16,.55);
+      flex: 0 0 auto;
+    }
+
+    .statusPill{
+      display:inline-flex;
+      align-items:center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.6);
+      user-select:none;
+    }
+
+    .desc{
+      margin: 12px 0 14px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: rgba(42,11,16,.86);
+      max-width: 60ch;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .btn{
+      appearance:none;
+      border: none;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-weight: 650;
+      font-size: 13px;
+      cursor:pointer;
+      transition: transform .12s ease, filter .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.primary{
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(255,77,109,.28);
+    }
+
+    .btn.ghost{
+      background: rgba(0,0,0,.04);
+      border: 1px solid rgba(0,0,0,.08);
+      color: rgba(42,11,16,.85);
+    }
+
+    .btn[disabled]{
+      cursor:not-allowed;
+      opacity:.55;
+      filter: grayscale(.2);
+      transform: none !important;
+    }
+
+    .scratchWrap{
+      position: relative;
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px dashed rgba(255,77,109,.35);
+      background: rgba(255,77,109,.05);
+    }
+
+    .scratchHint{
+      position:absolute;
+      inset: 0;
+      display:grid;
+      place-items:center;
+      pointer-events:none;
+      z-index: 2;
+      font-weight: 700;
+      color: rgba(42,11,16,.60);
+      text-transform: uppercase;
+      letter-spacing:.12em;
+      font-size: 11px;
+      padding: 12px;
+      text-align:center;
+    }
+
+    canvas.scratch{
+      width: 100%;
+      height: 94px;
+      display:block;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    /* Redeemed stamp */
+    .stamp{
+      position:absolute;
+      top: 18px;
+      right: 20px;
+      transform: rotate(10deg);
+      padding: 8px 12px;
+      border: 2px solid rgba(255,47,85,.75);
+      color: rgba(255,47,85,.85);
+      font-weight: 900;
+      letter-spacing:.12em;
+      text-transform: uppercase;
+      border-radius: 10px;
+      background: rgba(255,255,255,.75);
+      display:none;
+      z-index: 4;
+    }
+
+    .coupon.redeemed .stamp{ display:block; }
+    .coupon.redeemed .inner{ filter: grayscale(.12); }
+
+    /* Locked overlay */
+    .lockedOverlay{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,.52);
+      display:none;
+      z-index: 6;
+      color:#fff;
+      padding: 18px;
+    }
+    .coupon.locked .lockedOverlay{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+    .lockedCard{
+      max-width: 420px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 18px;
+      padding: 16px 14px;
+      background: rgba(0,0,0,.25);
+      backdrop-filter: blur(6px);
+    }
+    .lockedCard .lockTitle{
+      font-family: var(--serif);
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .lockedCard .lockSub{
+      opacity:.9;
+      font-size: 13px;
+      line-height:1.45;
+    }
+
+    /* Modal */
+    .modalBack{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .modalBack.show{ display:flex; }
+
+    .modal{
+      width: min(560px, 100%);
+      background: #140004;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 22px;
+      box-shadow: 0 20px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 16px 16px 12px;
+      background: rgba(255,77,109,.10);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .modalTitle{
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height:1.2;
+      margin:0;
+    }
+    .modalClose{
+      background: transparent;
+      border: 1px solid rgba(255,255,255,.18);
+      color: rgba(255,255,255,.9);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-weight: 700;
+    }
+    .modalBody{
+      padding: 14px 16px 16px;
+      color: rgba(255,255,255,.88);
+      line-height:1.55;
+      font-size: 14px;
+    }
+    .modalBody .big{
+      font-size: 15px;
+      margin: 6px 0 10px;
+    }
+    .modalBody .muted{
+      opacity:.85;
+      font-size: 13px;
+    }
+
+    /* Petals */
+    .petals{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index: 998;
+    }
+    .petal{
+      position:absolute;
+      top: -40px;
+      width: 14px;
+      height: 10px;
+      border-radius: 60% 40% 60% 40%;
+      background: rgba(255,77,109,.9);
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.25));
+      animation: fall linear forwards;
+      opacity: .95;
+    }
+    .petal:nth-child(3n){
+      background: rgba(255,155,176,.95);
+    }
+    @keyframes fall{
+      to{
+        transform: translate(var(--dx), 110vh) rotate(var(--rot));
+        opacity: 0.1;
+      }
+    }
+
+    /* Small footer */
+    footer{
+      text-align:center;
+      margin-top: 34px;
+      opacity:.85;
+      font-size: 13px;
+      color: rgba(255,255,255,.80);
+    }
+    footer .tiny{
+      opacity:.78;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="petals" id="petals"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="kicker">private / redeemable / long-distance</div>
+      <h1>Your Valentine Coupon Vault</h1>
+      <p class="sub">
+        Scratch to reveal each coupon. Redeem is one-time only.
+        The last coupon unlocks after you use the others.
+      </p>
+      <div class="hint">🪙 Tip: scratch until the button appears</div>
+    </header>
+
+    <section class="grid" id="grid"></section>
+
+    <footer>
+      <div>Distance doesn’t stop us from spending time together.</div>
+      <div class="tiny">Made for you, on purpose.</div>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalBack" id="modalBack" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modalHead">
+        <h2 class="modalTitle" id="modalTitle">Redeemed 💖</h2>
+        <button class="modalClose" id="modalClose">Close</button>
+      </div>
+      <div class="modalBody" id="modalBody">
+        <div class="big" id="modalLine1"></div>
+        <div class="muted" id="modalLine2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== Config ======
+    const STORAGE_KEY = "valentine_coupons_v1";
+
+    const coupons = [
+      { id:"movie_night", icon:"🎬", title:"Movie night together", desc:"We pick a time, press play together, and keep a running commentary." },
+      { id:"cook_call", icon:"🍳", title:"Cook the same recipe on a call", desc:"Same ingredients, same chaos, same taste test — together." },
+      { id:"clash_round", icon:"🎮", title:"A clash round", desc:"One round, full focus. Winner gets bragging rights." },
+      { id:"virtual_drink", icon:"🍷", title:"A virtual drink together", desc:"A toast across the miles. You pick the vibe." },
+      { id:"one_secret", icon:"🤫", title:"Sharing one secret", desc:"A safe little confession — no judgment, only closeness." },
+      { id:"flirty_voice", icon:"🎙️", title:"A flirty voice note", desc:"I’ll send you one that you can replay whenever you want." },
+      { id:"you_choose_movie", icon:"🎥", title:"You choose the movie", desc:"No negotiations. No debate. You pick — I commit." },
+      // locked until all others redeemed:
+      { id:"lingerie_show", icon:"🔥", title:"Live lingerie show-off", desc:"Your private, last-unlock treat. Redeem when you’re ready.", isFinal:true }
+    ];
+
+    // ====== State ======
+    const defaultState = () => Object.fromEntries(coupons.map(c => [c.id, { scratched:false, redeemed:false, redeemedAt:null }]));
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        // merge to handle updates
+        const base = defaultState();
+        for(const k in parsed){
+          if(base[k]) base[k] = { ...base[k], ...parsed[k] };
+        }
+        return base;
+      }catch{
+        return defaultState();
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    let state = loadState();
+
+    // ====== Helpers ======
+    const el = (tag, attrs={}, children=[]) => {
+      const node = document.createElement(tag);
+      for(const [k,v] of Object.entries(attrs)){
+        if(k === "class") node.className = v;
+        else if(k === "html") node.innerHTML = v;
+        else node.setAttribute(k, v);
+      }
+      for(const ch of children){
+        node.appendChild(typeof ch === "string" ? document.createTextNode(ch) : ch);
+      }
+      return node;
+    };
+
+    function allNonFinalRedeemed(){
+      return coupons.filter(c => !c.isFinal).every(c => state[c.id].redeemed);
+    }
+
+    function isLocked(coupon){
+      return coupon.isFinal && !allNonFinalRedeemed();
+    }
+
+    function formatDate(ts){
+      try{
+        return new Date(ts).toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }catch{
+        return "";
+      }
+    }
+
+    // ====== Petals on redemption ======
+    function spawnPetals(){
+      const wrap = document.getElementById("petals");
+      const count = 28;
+      const w = window.innerWidth;
+
+      for(let i=0;i<count;i++){
+        const p = document.createElement("div");
+        p.className = "petal";
+        const x = Math.random() * w;
+        const dx = (Math.random() * 260 - 130) + "px";
+        const rot = (Math.random() * 720 - 360) + "deg";
+        const dur = (Math.random() * 1.6 + 2.6); // 2.6s–4.2s
+        const delay = (Math.random() * 0.25);
+        const size = Math.random() * 10 + 10;
+
+        p.style.left = x + "px";
+        p.style.setProperty("--dx", dx);
+        p.style.setProperty("--rot", rot);
+        p.style.animationDuration = dur + "s";
+        p.style.animationDelay = delay + "s";
+        p.style.width = size + "px";
+        p.style.height = (size * 0.75) + "px";
+        p.style.opacity = (Math.random() * 0.25 + 0.75).toFixed(2);
+
+        wrap.appendChild(p);
+
+        const totalLife = (dur + delay) * 1000 + 200;
+        setTimeout(() => p.remove(), totalLife);
+      }
+    }
+
+    // ====== Modal ======
+    const modalBack = document.getElementById("modalBack");
+    const modalClose = document.getElementById("modalClose");
+    const modalLine1 = document.getElementById("modalLine1");
+    const modalLine2 = document.getElementById("modalLine2");
+    const modalTitle = document.getElementById("modalTitle");
+
+    function showModal(title, line1, line2){
+      modalTitle.textContent = title;
+      modalLine1.textContent = line1;
+      modalLine2.textContent = line2;
+      modalBack.classList.add("show");
+      modalBack.setAttribute("aria-hidden", "false");
+    }
+    function hideModal(){
+      modalBack.classList.remove("show");
+      modalBack.setAttribute("aria-hidden", "true");
+    }
+    modalClose.addEventListener("click", hideModal);
+    modalBack.addEventListener("click", (e) => {
+      if(e.target === modalBack) hideModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") hideModal();
+    });
+
+    // ====== Scratch implementation ======
+    function initScratch(canvas, couponId, onFullyScratched){
+      // Setup hiDPI canvas
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      const W = Math.max(320, rect.width);
+      const H = rect.height || 94;
+
+      canvas.width = Math.floor(W * dpr);
+      canvas.height = Math.floor(H * dpr);
+      canvas.style.height = H + "px";
+
+      ctx.scale(dpr, dpr);
+
+      // Draw scratch layer
+      function drawLayer(){
+        // base
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(255,255,255,0)";
+        ctx.clearRect(0,0,W,H);
+
+        // metallic-ish overlay
+        const g = ctx.createLinearGradient(0,0,W,H);
+        g.addColorStop(0, "rgba(255,155,176,.95)");
+        g.addColorStop(.45, "rgba(255,77,109,.92)");
+        g.addColorStop(1, "rgba(255,155,176,.92)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,W,H);
+
+        // speckles
+        ctx.fillStyle = "rgba(255,255,255,.18)";
+        for(let i=0;i<160;i++){
+          const x = Math.random()*W, y = Math.random()*H;
+          ctx.fillRect(x,y,1,1);
+        }
+
+        // instruction line
+        ctx.fillStyle = "rgba(20,0,4,.25)";
+        ctx.fillRect(0, H-28, W, 28);
+        ctx.font = "700 12px " + getComputedStyle(document.body).fontFamily;
+        ctx.fillStyle = "rgba(255,255,255,.92)";
+        ctx.textAlign = "center";
+        ctx.fillText("SCRATCH HERE", W/2, H-10);
+      }
+
+      drawLayer();
+
+      let isDown = false;
+      let last = null;
+      const brush = 18;
+
+      function posFromEvent(e){
+        const r = canvas.getBoundingClientRect();
+        const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+        const clientY = (e.touches ? e.touches[0].clientY : e.clientY);
+        return { x: clientX - r.left, y: clientY - r.top };
+      }
+
+      function scratchAt(p){
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, brush, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      function scratchLine(a,b){
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.hypot(dx,dy);
+        const step = Math.max(2, brush/2);
+        const n = Math.ceil(dist/step);
+        for(let i=0;i<=n;i++){
+          scratchAt({ x: a.x + dx*(i/n), y: a.y + dy*(i/n) });
+        }
+      }
+
+      // Estimate cleared percentage (sample grid)
+      function clearedRatio(){
+        const img = ctx.getImageData(0,0,W,H).data;
+        let cleared = 0, total = 0;
+        const step = 8; // sampling stride
+        for(let y=0;y<H;y+=step){
+          for(let x=0;x<W;x+=step){
+            const idx = (y*W + x)*4 + 3; // alpha
+            total++;
+            if(img[idx] < 50) cleared++;
+          }
+        }
+        return cleared/total;
+      }
+
+      function checkDone(){
+        if(state[couponId].scratched) return;
+        const ratio = clearedRatio();
+        if(ratio > 0.55){
+          state[couponId].scratched = true;
+          saveState();
+          onFullyScratched();
+        }
+      }
+
+      const down = (e) => {
+        if(state[couponId].scratched) return;
+        isDown = true;
+        last = posFromEvent(e);
+        scratchAt(last);
+        e.preventDefault();
+      };
+      const move = (e) => {
+        if(!isDown || state[couponId].scratched) return;
+        const p = posFromEvent(e);
+        scratchLine(last, p);
+        last = p;
+        e.preventDefault();
+      };
+      const up = () => {
+        if(!isDown || state[couponId].scratched) return;
+        isDown = false;
+        last = null;
+        checkDone();
+      };
+
+      canvas.addEventListener("mousedown", down);
+      canvas.addEventListener("mousemove", move);
+      window.addEventListener("mouseup", up);
+
+      canvas.addEventListener("touchstart", down, { passive:false });
+      canvas.addEventListener("touchmove", move, { passive:false });
+      window.addEventListener("touchend", up);
+
+      // If already scratched, clear overlay and disable pointer
+      function revealInstant(){
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillRect(0,0,W,H);
+        canvas.style.pointerEvents = "none";
+      }
+
+      return { revealInstant };
+    }
+
+    // ====== Render ======
+    const grid = document.getElementById("grid");
+
+    function render(){
+      grid.innerHTML = "";
+
+      for(const c of coupons){
+        const isRedeemed = state[c.id].redeemed;
+        const locked = isLocked(c);
+
+        const card = el("article", { class: "coupon" + (isRedeemed ? " redeemed" : "") + (locked ? " locked" : "") });
+
+        const stamp = el("div", { class:"stamp" }, ["Redeemed"]);
+        card.appendChild(stamp);
+
+        const lockedOverlay = el("div", { class:"lockedOverlay" }, [
+          el("div", { class:"lockedCard" }, [
+            el("div", { class:"lockTitle" }, ["🔒 Locked"]),
+            el("div", { class:"lockSub" }, ["Redeem all other coupons to unlock the final one."])
+          ])
+        ]);
+        card.appendChild(lockedOverlay);
+
+        const inner = el("div", { class:"inner" });
+
+        const statusText = locked ? "Locked" : (isRedeemed ? "Used" : (state[c.id].scratched ? "Revealed" : "Hidden"));
+        const statusIcon = locked ? "🔒" : (isRedeemed ? "✅" : (state[c.id].scratched ? "👀" : "🪙"));
+
+        const row = el("div", { class:"row" }, [
+          el("div", { class:"title" }, [
+            el("div", { class:"emoji" }, [c.icon]),
+            el("div", {}, [
+              el("div", { class:"name" }, [c.title]),
+              el("div", { class:"tag" }, [c.isFinal ? "Final coupon (unlocks last)" : "Coupon"])
+            ])
+          ]),
+          el("div", { class:"meta" }, [
+            el("div", { class:"statusPill" }, [statusIcon + " " + statusText])
+          ])
+        ]);
+
+        inner.appendChild(row);
+        inner.appendChild(el("div", { class:"desc" }, [c.desc]));
+
+        // Scratch area
+        const scratchWrap = el("div", { class:"scratchWrap" });
+        const scratchHint = el("div", { class:"scratchHint" }, ["Scratch to reveal"]);
+        const canvas = el("canvas", { class:"scratch", "aria-label":"Scratch area" });
+
+        scratchWrap.appendChild(scratchHint);
+        scratchWrap.appendChild(canvas);
+        inner.appendChild(scratchWrap);
+
+        // Actions
+        const redeemedAt = state[c.id].redeemedAt ? formatDate(state[c.id].redeemedAt) : "";
+        const leftInfo = el("div", { style:"font-size:12px;color:rgba(42,11,16,.55);" }, [
+          isRedeemed ? ("Redeemed: " + redeemedAt) : (locked ? "Unlock condition: redeem the others" : (state[c.id].scratched ? "Ready to redeem" : "Scratch first"))
+        ]);
+
+        const redeemBtn = el("button", { class:"btn primary", type:"button" }, ["Redeem"]);
+        const resetBtn = el("button", { class:"btn ghost", type:"button" }, ["Reset"]);
+
+        // Requirements: one-use only -> disable after redeem; locked prevents redeem; scratch required.
+        redeemBtn.disabled = locked || isRedeemed || !state[c.id].scratched;
+        resetBtn.disabled = false;
+
+        redeemBtn.addEventListener("click", () => redeemCoupon(c));
+        resetBtn.addEventListener("click", () => {
+          // Optional convenience: reset everything (for testing). You can remove if you want.
+          localStorage.removeItem(STORAGE_KEY);
+          state = loadState();
+          document.body.classList.remove("night");
+          render();
+        });
+
+        const actions = el("div", { class:"actions" }, [
+          leftInfo,
+          el("div", { style:"display:flex;gap:10px;" }, [redeemBtn, resetBtn])
+        ]);
+
+        inner.appendChild(actions);
+        card.appendChild(inner);
+
+        grid.appendChild(card);
+
+        // Init scratch behavior per coupon
+        const scratchController = initScratch(canvas, c.id, () => {
+          // hide hint and re-render to enable redeem
+          scratchHint.style.display = "none";
+          render();
+        });
+
+        // If already scratched, clear overlay; also hide hint
+        if(state[c.id].scratched){
+          scratchHint.style.display = "none";
+          scratchController.revealInstant();
+        }
+        if(locked){
+          // prevent scratching while locked (so it's truly "last")
+          canvas.style.pointerEvents = "none";
+        }
+        if(isRedeemed){
+          // prevent scratching once redeemed
+          canvas.style.pointerEvents = "none";
+        }
+      }
+
+      // If lingerie already redeemed, keep night mode on
+      if(state["lingerie_show"]?.redeemed){
+        document.body.classList.add("night");
+      }
+    }
+
+    function redeemCoupon(c){
+      if(isLocked(c) || state[c.id].redeemed || !state[c.id].scratched) return;
+
+      state[c.id].redeemed = true;
+      state[c.id].redeemedAt = Date.now();
+      saveState();
+
+      // Visual effects
+      spawnPetals();
+
+      // Modal message requirement
+      showModal(
+        "Redeemed 💖",
+        `"${c.title}" is yours — schedule whenever you want.`,
+        "One use only (this coupon is now blocked)."
+      );
+
+      // Night mode on lingerie redemption
+      if(c.id === "lingerie_show"){
+        document.body.classList.add("night");
+      }
+
+      // Re-render to disable and maybe unlock final
+      render();
+    }
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
