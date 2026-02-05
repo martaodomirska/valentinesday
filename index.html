@@ -12,16 +12,18 @@
   <style>
     :root{
       --red: #8b0b14;
-      --red2:#b0121d;
       --paper:#f2e6d6;
       --paper2:#f7efe3;
       --ink:#1e0a0c;
       --shadow: rgba(0,0,0,.18);
       --edge: rgba(139,11,20,.22);
       --night-bg:#120004;
-      --night-paper:#1b070a;
       --night-paper2:#21090d;
       --night-ink:#f3e6d6;
+
+      /* scratch coating (light) */
+      --scratch: rgba(247,239,227,.96);
+      --scratch2: rgba(242,230,214,.96);
     }
 
     *{ box-sizing:border-box; }
@@ -43,7 +45,6 @@
       color: var(--night-ink);
     }
 
-    /* subtle paper grain */
     body::before{
       content:"";
       position:fixed;
@@ -71,7 +72,7 @@
 
     .topline{
       display:flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items:center;
       gap: 12px;
       color: rgba(139,11,20,.75);
@@ -112,11 +113,6 @@
       gap: 16px;
     }
 
-    @media (max-width: 900px){
-      .grid{ gap: 14px; }
-    }
-
-    /* coupon ticket */
     .coupon{
       grid-column: span 6;
       position: relative;
@@ -164,7 +160,6 @@
       gap: 10px;
     }
 
-    /* classic ticket notches */
     .notch{
       position:absolute;
       top: 50%;
@@ -175,7 +170,6 @@
       background: var(--paper);
     }
     body.night .notch{ background: var(--night-bg); }
-
     .notch.left{ left: -11px; }
     .notch.right{ right: -11px; }
 
@@ -252,7 +246,6 @@
       color: #120004;
     }
 
-    /* stub content */
     .stubTop{
       display:flex;
       flex-direction:column;
@@ -313,7 +306,6 @@
     }
     body.night .stubBottom{ color: rgba(243,230,214,.62); }
 
-    /* redeemed stamp */
     .stamp{
       position:absolute;
       top: 14px;
@@ -328,6 +320,7 @@
       letter-spacing: .14em;
       display:none;
       z-index: 4;
+      pointer-events:none;
     }
     body.night .stamp{
       border-color: rgba(243,230,214,.72);
@@ -336,7 +329,6 @@
     }
     .coupon.redeemed .stamp{ display:block; }
 
-    /* locked overlay (lingerie) */
     .lockedOverlay{
       position:absolute;
       inset:0;
@@ -359,10 +351,10 @@
       color: rgba(255,255,255,.92);
     }
     .lockedTitle{
-      font-family: "Libre Baskerville", serif;
       font-weight: 700;
       font-size: 18px;
       margin: 0 0 8px;
+      font-family: "Libre Baskerville", serif;
     }
     .lockedSub{
       font-size: 13px;
@@ -371,7 +363,6 @@
       opacity:.92;
     }
 
-    /* scratch overlay: covers entire coupon */
     .scratchLayer{
       position:absolute;
       inset:0;
@@ -393,15 +384,14 @@
       font-family: "IBM Plex Mono", monospace;
       font-size: 12px;
       letter-spacing: .14em;
-      color: rgba(30,10,12,.7);
-      background: rgba(242,230,214,.12);
+      color: rgba(139,11,20,.70);
+      background: rgba(0,0,0,.02);
     }
     body.night .scratchHint{
-      color: rgba(243,230,214,.7);
-      background: rgba(18,0,4,.22);
+      color: rgba(243,230,214,.70);
+      background: rgba(0,0,0,.20);
     }
 
-    /* petals */
     .petals{
       position: fixed;
       inset: 0;
@@ -420,12 +410,8 @@
       animation: fall linear forwards;
       opacity: .95;
     }
-    .petal:nth-child(3n){
-      background: rgba(176,18,29,.92);
-    }
-    .petal:nth-child(5n){
-      background: rgba(210,70,88,.88);
-    }
+    .petal:nth-child(3n){ background: rgba(176,18,29,.92); }
+    .petal:nth-child(5n){ background: rgba(210,70,88,.88); }
     @keyframes fall{
       to{
         transform: translate(var(--dx), 110vh) rotate(var(--rot));
@@ -433,7 +419,6 @@
       }
     }
 
-    /* modal */
     .modalBack{
       position:fixed;
       inset:0;
@@ -497,16 +482,6 @@
     }
     body.night .modalBody{ color: rgba(243,230,214,.78); }
     .modalBody .muted{ opacity:.85; font-size: 13px; }
-
-    footer{
-      margin-top: 26px;
-      text-align:center;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 12px;
-      letter-spacing: .12em;
-      color: rgba(139,11,20,.72);
-    }
-    body.night footer{ color: rgba(243,230,214,.58); }
   </style>
 </head>
 
@@ -514,29 +489,19 @@
   <div class="petals" id="petals"></div>
 
   <div class="wrap">
-    <div class="topline">
-      <div id="dateLeft">02 | 14 | 2025</div>
-      <div>love coupons</div>
-      <div id="dateRight"></div>
-    </div>
+    <div class="topline">02 | 14</div>
 
     <header>
       <h1>happy valentine's day</h1>
       <p class="sub">
-        scratch each coupon to reveal it. redeeming is one use only.
-        the last coupon unlocks after you redeem the others.
+        scratch a coupon to reveal it. a small scratch will unlock the whole coupon.
+        redeeming is one use only. the last coupon unlocks after you redeem the others.
       </p>
-      <div style="margin-top:10px; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.12em; color:rgba(139,11,20,.72);">
-        roses are red, violets are blue, your website should be working for you
-      </div>
     </header>
 
     <section class="grid" id="grid"></section>
-
-    <footer>made for you</footer>
   </div>
 
-  <!-- modal -->
   <div class="modalBack" id="modalBack" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modalHead">
@@ -551,7 +516,10 @@
   </div>
 
   <script>
-    const storageKey = "valentine_coupons_v2";
+    const storageKey = "valentine_coupons_v5";
+
+    // discord webhook (you provided)
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1468940626920865825/DKQgJ1jtS615nsA8UUwWShJT1nfPKocXkr9e15IbcUGSJVbHxwCSAyR4mQYuhIlGu7gL";
 
     const coupons = [
       { id:"movie_night", title:"movie night together", label:"this coupon is valid for", desc:"we pick a time, press play together, and stay on call." },
@@ -585,6 +553,7 @@
         return defaultState();
       }
     }
+
     function saveState(){
       localStorage.setItem(storageKey, JSON.stringify(state));
     }
@@ -604,7 +573,6 @@
       }
     }
 
-    // petals
     function spawnPetals(){
       const wrap = document.getElementById("petals");
       const count = 30;
@@ -634,7 +602,6 @@
       }
     }
 
-    // modal
     const modalBack = document.getElementById("modalBack");
     const modalClose = document.getElementById("modalClose");
     const modalTitle = document.getElementById("modalTitle");
@@ -656,10 +623,32 @@
     modalBack.addEventListener("click", (e) => { if(e.target === modalBack) hideModal(); });
     window.addEventListener("keydown", (e) => { if(e.key === "Escape") hideModal(); });
 
-    // scratch: full cover
-    function initScratch(canvas, couponId, onDone){
+    async function notifyDiscord(couponTitle, ts){
+      try{
+        const iso = new Date(ts).toISOString();
+        const local = formatDate(ts);
+        const msg =
+          "coupon redeemed\n" +
+          "coupon: " + couponTitle + "\n" +
+          "time: " + local + " (" + iso + ")\n" +
+          "page: " + location.href;
+
+        await fetch(discordWebhookUrl, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ content: msg })
+        });
+      }catch{
+        // ignore errors to avoid breaking the redeem flow
+      }
+    }
+
+    // scratch: full cover, reveal after small scratch
+    function initScratch(layerEl, canvas, couponId, onReveal){
       const ctx = canvas.getContext("2d");
-      let W = 0, H = 0, dpr = window.devicePixelRatio || 1;
+      let W = 0, H = 0;
+      const dpr = window.devicePixelRatio || 1;
+
       let isDown = false;
       let last = null;
       const brush = 26;
@@ -683,19 +672,22 @@
         ctx.globalCompositeOperation = "source-over";
         ctx.clearRect(0,0,W,H);
 
-        // scratch paint: solid, no gradients
-        ctx.fillStyle = "rgba(139,11,20,.92)";
+        // light coating
+        const g = ctx.createLinearGradient(0,0,W,H);
+        g.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue("--scratch"));
+        g.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue("--scratch2"));
+        ctx.fillStyle = g;
         ctx.fillRect(0,0,W,H);
 
-        // speckles
-        ctx.fillStyle = "rgba(255,255,255,.10)";
-        for(let i=0;i<220;i++){
+        // tiny speckles
+        ctx.fillStyle = "rgba(0,0,0,.08)";
+        for(let i=0;i<260;i++){
           const x = Math.random()*W, y = Math.random()*H;
           ctx.fillRect(x,y,1,1);
         }
 
-        // thin border line to feel like a coating
-        ctx.strokeStyle = "rgba(255,255,255,.22)";
+        // border line
+        ctx.strokeStyle = "rgba(139,11,20,.22)";
         ctx.lineWidth = 2;
         ctx.strokeRect(8,8,W-16,H-16);
       }
@@ -727,7 +719,7 @@
       function clearedRatio(){
         const data = ctx.getImageData(0,0,W,H).data;
         let cleared = 0, total = 0;
-        const step = 10;
+        const step = 12;
         for(let y=0;y<H;y+=step){
           for(let x=0;x<W;x+=step){
             const idx = (y*W + x)*4 + 3;
@@ -735,15 +727,24 @@
             if(data[idx] < 40) cleared++;
           }
         }
-        return cleared/total;
+        return cleared / total;
       }
 
-      function checkDone(){
+      function revealInstant(){
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillRect(0,0,W,H);
+
+        layerEl.style.display = "none";
+        layerEl.style.pointerEvents = "none";
+      }
+
+      function maybeReveal(){
         if(state[couponId].scratched) return;
-        if(clearedRatio() > 0.62){
+        if(clearedRatio() >= 0.08){
           state[couponId].scratched = true;
           saveState();
-          onDone();
+          revealInstant();
+          onReveal();
         }
       }
 
@@ -752,6 +753,7 @@
         isDown = true;
         last = pos(e);
         scratchAt(last);
+        maybeReveal();
         e.preventDefault();
       }
       function move(e){
@@ -759,19 +761,12 @@
         const p = pos(e);
         scratchLine(last, p);
         last = p;
+        maybeReveal();
         e.preventDefault();
       }
       function up(){
-        if(!isDown || state[couponId].scratched) return;
         isDown = false;
         last = null;
-        checkDone();
-      }
-
-      function revealInstant(){
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.fillRect(0,0,W,H);
-        canvas.style.pointerEvents = "none";
       }
 
       canvas.addEventListener("mousedown", down);
@@ -783,22 +778,28 @@
       window.addEventListener("touchend", up);
 
       window.addEventListener("resize", () => {
-        // keep it stable on resize
-        if(!state[couponId].scratched) resize();
-        else revealInstant();
+        if(state[couponId].scratched){
+          layerEl.style.display = "none";
+          layerEl.style.pointerEvents = "none";
+          return;
+        }
+        resize();
       });
 
       resize();
-      return { revealInstant, resize };
+      if(state[couponId].scratched){
+        revealInstant();
+      }
     }
 
-    function redeem(c){
+    async function redeem(c){
       if(isLocked(c)) return;
       if(!state[c.id].scratched) return;
       if(state[c.id].redeemed) return;
 
+      const ts = Date.now();
       state[c.id].redeemed = true;
-      state[c.id].redeemedAt = Date.now();
+      state[c.id].redeemedAt = ts;
       saveState();
 
       spawnPetals();
@@ -812,6 +813,8 @@
       if(c.id === "lingerie_show"){
         document.body.classList.add("night");
       }
+
+      await notifyDiscord(c.title, ts);
 
       render();
     }
@@ -913,10 +916,10 @@
         const stamp = document.createElement("div");
         stamp.className = "stamp";
         stamp.textContent = "redeemed";
+
         card.appendChild(ticket);
         card.appendChild(stamp);
 
-        // locked overlay
         const lockedOverlay = document.createElement("div");
         lockedOverlay.className = "lockedOverlay";
         const lockedCard = document.createElement("div");
@@ -932,73 +935,36 @@
         lockedOverlay.appendChild(lockedCard);
         card.appendChild(lockedOverlay);
 
-        // scratch overlay (covers whole coupon)
-        const scratchLayer = document.createElement("div");
-        scratchLayer.className = "scratchLayer";
+        if(!scratched && !redeemed){
+          const layer = document.createElement("div");
+          layer.className = "scratchLayer";
 
-        const scratchHint = document.createElement("div");
-        scratchHint.className = "scratchHint";
-        scratchHint.textContent = locked ? "locked" : (redeemed ? "redeemed" : "scratch to reveal");
+          const canvas = document.createElement("canvas");
+          canvas.className = "scratchCanvas";
+          canvas.setAttribute("aria-label", "scratch coupon");
 
-        const canvas = document.createElement("canvas");
-        canvas.className = "scratchCanvas";
-        canvas.setAttribute("aria-label", "scratch coupon");
+          const hint = document.createElement("div");
+          hint.className = "scratchHint";
+          hint.textContent = locked ? "locked" : "scratch to reveal";
 
-        scratchLayer.appendChild(canvas);
-        scratchLayer.appendChild(scratchHint);
-        card.appendChild(scratchLayer);
+          layer.appendChild(canvas);
+          layer.appendChild(hint);
+          card.appendChild(layer);
+
+          if(locked){
+            canvas.style.pointerEvents = "none";
+          }else{
+            initScratch(layer, canvas, c.id, () => render());
+          }
+        }
 
         grid.appendChild(card);
-
-        // behavior rules
-        if(locked || redeemed){
-          // keep the coating visible, but disable interaction
-          canvas.style.pointerEvents = "none";
-        }
-
-        const controller = initScratch(canvas, c.id, () => {
-          scratchHint.textContent = "revealed";
-          render();
-        });
-
-        // if already scratched, remove coating
-        if(scratched){
-          controller.revealInstant();
-          scratchHint.style.display = "none";
-        }
-
-        // if locked or redeemed, do not allow scratching at all
-        if(locked || redeemed){
-          // keep the coating drawn, hint shows state
-          canvas.style.pointerEvents = "none";
-        }else{
-          // allow scratch
-          canvas.style.pointerEvents = "auto";
-        }
-
-        // if redeemed, we still want the stamp visible
-        // stamp display handled by css on .coupon.redeemed
       }
 
-      // keep night mode if lingerie already redeemed
       if(state["lingerie_show"]?.redeemed){
         document.body.classList.add("night");
       }
     }
-
-    // dates: left fixed as in your reference, right set to local time
-    (function setDates(){
-      const right = document.getElementById("dateRight");
-      try{
-        const d = new Date();
-        const mm = String(d.getMonth()+1).padStart(2,"0");
-        const dd = String(d.getDate()).padStart(2,"0");
-        const yyyy = String(d.getFullYear());
-        right.textContent = mm + " | " + dd + " | " + yyyy;
-      }catch{
-        right.textContent = "";
-      }
-    })();
 
     render();
   </script>
