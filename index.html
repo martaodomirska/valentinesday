@@ -21,9 +21,8 @@
       --night-paper2:#21090d;
       --night-ink:#f3e6d6;
 
-      /* scratch coating (light) */
-      --scratch: rgba(247,239,227,.96);
-      --scratch2: rgba(242,230,214,.96);
+      /* scratch coating: solid (no gradient) */
+      --scratch: rgba(236,224,206,.96);
     }
 
     *{ box-sizing:border-box; }
@@ -234,6 +233,8 @@
       color: #fff;
       transition: transform .12s ease, opacity .2s ease, filter .2s ease;
       user-select:none;
+      position: relative;
+      z-index: 2;
     }
     .btn:active{ transform: translateY(1px); }
     .btn[disabled]{
@@ -319,7 +320,7 @@
       font-size: 12px;
       letter-spacing: .14em;
       display:none;
-      z-index: 4;
+      z-index: 7;
       pointer-events:none;
     }
     body.night .stamp{
@@ -337,7 +338,7 @@
       align-items:center;
       justify-content:center;
       padding: 18px;
-      z-index: 6;
+      z-index: 8;
     }
     .coupon.locked .lockedOverlay{ display:flex; }
 
@@ -363,10 +364,11 @@
       opacity:.92;
     }
 
+    /* scratch overlay */
     .scratchLayer{
       position:absolute;
       inset:0;
-      z-index: 5;
+      z-index: 6;
     }
     .scratchCanvas{
       width: 100%;
@@ -384,7 +386,7 @@
       font-family: "IBM Plex Mono", monospace;
       font-size: 12px;
       letter-spacing: .14em;
-      color: rgba(139,11,20,.70);
+      color: rgba(139,11,20,.78);
       background: rgba(0,0,0,.02);
     }
     body.night .scratchHint{
@@ -489,7 +491,7 @@
   <div class="petals" id="petals"></div>
 
   <div class="wrap">
-    <div class="topline">02 | 14</div>
+    <div class="topline">02 | 14 | 2025</div>
 
     <header>
       <h1>happy valentine's day</h1>
@@ -516,9 +518,9 @@
   </div>
 
   <script>
-    const storageKey = "valentine_coupons_v5";
+    const storageKey = "valentine_coupons_v6";
 
-    // discord webhook (you provided)
+    // treat this like a password. rotate in discord if it leaks.
     const discordWebhookUrl = "https://discord.com/api/webhooks/1468940626920865825/DKQgJ1jtS615nsA8UUwWShJT1nfPKocXkr9e15IbcUGSJVbHxwCSAyR4mQYuhIlGu7gL";
 
     const coupons = [
@@ -639,54 +641,46 @@
           body: JSON.stringify({ content: msg })
         });
       }catch{
-        // ignore errors to avoid breaking the redeem flow
+        // ignore errors
       }
     }
 
-    // scratch: full cover, reveal after small scratch
+    // scratch overlay: fixed sizing + reliable pointer events
     function initScratch(layerEl, canvas, couponId, onReveal){
-      const ctx = canvas.getContext("2d");
-      let W = 0, H = 0;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       const dpr = window.devicePixelRatio || 1;
 
+      let W = 0, H = 0;
       let isDown = false;
       let last = null;
       const brush = 26;
 
-      function resize(){
-        const rect = canvas.getBoundingClientRect();
+      function sizeFromLayer(){
+        const rect = layerEl.getBoundingClientRect();
         W = Math.max(10, rect.width);
         H = Math.max(10, rect.height);
 
         canvas.width = Math.floor(W * dpr);
         canvas.height = Math.floor(H * dpr);
         ctx.setTransform(dpr,0,0,dpr,0,0);
-
-        drawLayer();
-        if(state[couponId].scratched){
-          revealInstant();
-        }
       }
 
       function drawLayer(){
         ctx.globalCompositeOperation = "source-over";
         ctx.clearRect(0,0,W,H);
 
-        // light coating
-        const g = ctx.createLinearGradient(0,0,W,H);
-        g.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue("--scratch"));
-        g.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue("--scratch2"));
-        ctx.fillStyle = g;
+        // solid light coating (no gradient)
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--scratch").trim();
         ctx.fillRect(0,0,W,H);
 
-        // tiny speckles
+        // speckles
         ctx.fillStyle = "rgba(0,0,0,.08)";
-        for(let i=0;i<260;i++){
+        for(let i=0;i<320;i++){
           const x = Math.random()*W, y = Math.random()*H;
           ctx.fillRect(x,y,1,1);
         }
 
-        // border line
+        // border
         ctx.strokeStyle = "rgba(139,11,20,.22)";
         ctx.lineWidth = 2;
         ctx.strokeRect(8,8,W-16,H-16);
@@ -719,7 +713,7 @@
       function clearedRatio(){
         const data = ctx.getImageData(0,0,W,H).data;
         let cleared = 0, total = 0;
-        const step = 12;
+        const step = 14;
         for(let y=0;y<H;y+=step){
           for(let x=0;x<W;x+=step){
             const idx = (y*W + x)*4 + 3;
@@ -731,9 +725,6 @@
       }
 
       function revealInstant(){
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.fillRect(0,0,W,H);
-
         layerEl.style.display = "none";
         layerEl.style.pointerEvents = "none";
       }
@@ -756,6 +747,7 @@
         maybeReveal();
         e.preventDefault();
       }
+
       function move(e){
         if(!isDown || state[couponId].scratched) return;
         const p = pos(e);
@@ -764,6 +756,7 @@
         maybeReveal();
         e.preventDefault();
       }
+
       function up(){
         isDown = false;
         last = null;
@@ -777,19 +770,29 @@
       canvas.addEventListener("touchmove", move, { passive:false });
       window.addEventListener("touchend", up);
 
-      window.addEventListener("resize", () => {
+      function init(){
+        sizeFromLayer();
+        drawLayer();
+        canvas.style.pointerEvents = "auto";
+      }
+
+      // initialize after layout is settled
+      requestAnimationFrame(() => {
+        init();
         if(state[couponId].scratched){
-          layerEl.style.display = "none";
-          layerEl.style.pointerEvents = "none";
-          return;
+          revealInstant();
         }
-        resize();
       });
 
-      resize();
-      if(state[couponId].scratched){
-        revealInstant();
-      }
+      window.addEventListener("resize", () => {
+        if(state[couponId].scratched){
+          revealInstant();
+          return;
+        }
+        requestAnimationFrame(() => {
+          init();
+        });
+      });
     }
 
     async function redeem(c){
@@ -935,6 +938,7 @@
         lockedOverlay.appendChild(lockedCard);
         card.appendChild(lockedOverlay);
 
+        // scratch overlay only if not scratched and not redeemed
         if(!scratched && !redeemed){
           const layer = document.createElement("div");
           layer.className = "scratchLayer";
