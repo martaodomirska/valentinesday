@@ -20,7 +20,6 @@
       --night-bg:#120004;
       --night-paper2:#21090d;
       --night-ink:#f3e6d6;
-
       --scratch: rgba(236,224,206,.96);
     }
 
@@ -41,23 +40,6 @@
     body.night{
       background: var(--night-bg);
       color: var(--night-ink);
-    }
-
-    /* ios-safe texture layer: no mix-blend-mode, always behind content */
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:-1;
-      background:
-        radial-gradient(circle at 30% 10%, rgba(0,0,0,.035), transparent 45%),
-        radial-gradient(circle at 80% 60%, rgba(0,0,0,.03), transparent 50%),
-        repeating-linear-gradient(90deg, rgba(0,0,0,.02), rgba(0,0,0,.02) 1px, transparent 1px, transparent 7px);
-      opacity:.35;
-    }
-    body.night::before{
-      opacity:.18;
     }
 
     .wrap{
@@ -140,36 +122,12 @@
 
     .main{
       position:relative;
-      padding: 14px 14px 12px;
+      padding: 14px;
       border-right: 2px dashed rgba(139,11,20,.45);
-      background: linear-gradient(0deg, rgba(0,0,0,.02), transparent);
     }
     body.night .main{
       border-right-color: rgba(243,230,214,.35);
-      background: linear-gradient(0deg, rgba(255,255,255,.05), transparent);
     }
-
-    .stub{
-      position:relative;
-      padding: 12px 10px;
-      display:flex;
-      flex-direction:column;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .notch{
-      position:absolute;
-      top: 50%;
-      width: 22px;
-      height: 22px;
-      transform: translateY(-50%);
-      border-radius: 50%;
-      background: var(--paper);
-    }
-    body.night .notch{ background: var(--night-bg); }
-    .notch.left{ left: -11px; }
-    .notch.right{ right: -11px; }
 
     .label{
       font-family: "IBM Plex Mono", monospace;
@@ -178,7 +136,6 @@
       color: rgba(139,11,20,.75);
       margin-bottom: 8px;
     }
-    body.night .label{ color: rgba(243,230,214,.70); }
 
     .title{
       font-size: 22px;
@@ -187,7 +144,6 @@
       color: var(--red);
       margin: 0 0 8px;
     }
-    body.night .title{ color: rgba(243,230,214,.92); }
 
     .desc{
       font-size: 13.5px;
@@ -196,7 +152,6 @@
       color: rgba(30,10,12,.78);
       min-height: 42px;
     }
-    body.night .desc{ color: rgba(243,230,214,.74); }
 
     .footerline{
       margin-top: 10px;
@@ -205,19 +160,13 @@
       display:flex;
       align-items:center;
       justify-content: space-between;
-      gap: 12px;
-    }
-    body.night .footerline{
-      border-top-color: rgba(243,230,214,.22);
     }
 
     .status{
       font-family: "IBM Plex Mono", monospace;
       font-size: 11px;
       letter-spacing: .1em;
-      color: rgba(139,11,20,.78);
     }
-    body.night .status{ color: rgba(243,230,214,.70); }
 
     .btn{
       border: 0;
@@ -226,267 +175,15 @@
       font-family: "IBM Plex Mono", monospace;
       font-weight: 600;
       font-size: 12px;
-      letter-spacing: .08em;
       cursor:pointer;
       background: var(--red);
       color: #fff;
-      transition: transform .12s ease, opacity .2s ease, filter .2s ease;
-      user-select:none;
-      position: relative;
-      z-index: 2;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .btn[disabled]{
-      cursor:not-allowed;
-      opacity:.55;
-      filter: grayscale(.2);
-    }
-    body.night .btn{
-      background: rgba(243,230,214,.86);
-      color: #120004;
     }
 
-    .stubTop{
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-      align-items:center;
-      text-align:center;
-    }
-
-    .stubTag{
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 10px;
-      letter-spacing: .14em;
-      color: rgba(139,11,20,.8);
-      border: 1px solid rgba(139,11,20,.32);
-      padding: 6px 8px;
-      border-radius: 999px;
-      background: rgba(139,11,20,.06);
-      width: 100%;
-    }
-    body.night .stubTag{
-      color: rgba(243,230,214,.80);
-      border-color: rgba(243,230,214,.28);
-      background: rgba(255,255,255,.06);
-    }
-
-    .barcode{
-      width: 100%;
-      height: 44px;
-      border-radius: 10px;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          rgba(30,10,12,.85) 0px,
-          rgba(30,10,12,.85) 2px,
-          transparent 2px,
-          transparent 4px
-        );
-      opacity: .65;
-    }
-    body.night .barcode{
-      background:
-        repeating-linear-gradient(
-          90deg,
-          rgba(243,230,214,.88) 0px,
-          rgba(243,230,214,.88) 2px,
-          transparent 2px,
-          transparent 4px
-        );
-      opacity: .55;
-    }
-
-    .stubBottom{
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 10px;
-      letter-spacing: .16em;
-      color: rgba(139,11,20,.7);
-      text-align:center;
-    }
-    body.night .stubBottom{ color: rgba(243,230,214,.62); }
-
-    .stamp{
-      position:absolute;
-      top: 14px;
-      right: 14px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 2px solid rgba(139,11,20,.75);
-      background: rgba(242,230,214,.92);
-      color: rgba(139,11,20,.9);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 12px;
-      letter-spacing: .14em;
-      display:none;
-      z-index: 7;
-      pointer-events:none;
-    }
-    body.night .stamp{
-      border-color: rgba(243,230,214,.72);
-      background: rgba(18,0,4,.6);
-      color: rgba(243,230,214,.88);
-    }
-    .coupon.redeemed .stamp{ display:block; }
-
-    .lockedOverlay{
-      position:absolute;
-      inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      z-index: 8;
-    }
-    .coupon.locked .lockedOverlay{ display:flex; }
-
-    .lockedCard{
-      width: min(420px, 100%);
-      border-radius: 18px;
-      background: rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.22);
-      padding: 16px 14px;
-      text-align:center;
-      color: rgba(255,255,255,.92);
-    }
-    .lockedTitle{
-      font-weight: 700;
-      font-size: 18px;
-      margin: 0 0 8px;
-      font-family: "Libre Baskerville", serif;
-    }
-    .lockedSub{
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 0;
-      opacity:.92;
-    }
-
-    .scratchLayer{
-      position:absolute;
-      inset:0;
-      z-index: 6;
-    }
-    .scratchCanvas{
-      width: 100%;
-      height: 100%;
-      display:block;
-      cursor: grab;
-      touch-action: none;
-    }
-    .scratchHint{
-      position:absolute;
-      inset:0;
-      display:grid;
-      place-items:center;
-      pointer-events:none;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 12px;
-      letter-spacing: .14em;
-      color: rgba(139,11,20,.78);
-      background: rgba(0,0,0,.02);
-    }
-    body.night .scratchHint{
-      color: rgba(243,230,214,.70);
-      background: rgba(0,0,0,.20);
-    }
-
-    .petals{
-      position: fixed;
-      inset: 0;
-      pointer-events:none;
-      overflow:hidden;
-      z-index: 999;
-    }
-    .petal{
-      position:absolute;
-      top:-40px;
-      width: 14px;
-      height: 10px;
-      border-radius: 60% 40% 60% 40%;
-      background: rgba(139,11,20,.92);
-      filter: drop-shadow(0 8px 10px rgba(0,0,0,.25));
-      animation: fall linear forwards;
-      opacity: .95;
-    }
-    .petal:nth-child(3n){ background: rgba(176,18,29,.92); }
-    .petal:nth-child(5n){ background: rgba(210,70,88,.88); }
-    @keyframes fall{
-      to{
-        transform: translate(var(--dx), 110vh) rotate(var(--rot));
-        opacity: .08;
-      }
-    }
-
-    .modalBack{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.62);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      z-index: 1000;
-    }
-    .modalBack.show{ display:flex; }
-    .modal{
-      width: min(560px, 100%);
-      border-radius: 22px;
-      overflow:hidden;
-      background: var(--paper2);
-      border: 2px solid rgba(139,11,20,.55);
-      box-shadow: 0 20px 70px rgba(0,0,0,.45);
-    }
-    body.night .modal{
-      background: rgba(18,0,4,.85);
-      border-color: rgba(243,230,214,.28);
-    }
-    .modalHead{
-      padding: 14px 16px 12px;
-      border-bottom: 1px solid rgba(139,11,20,.25);
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap: 12px;
-    }
-    body.night .modalHead{ border-bottom-color: rgba(243,230,214,.18); }
-    .modalTitle{
-      margin:0;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--red);
-    }
-    body.night .modalTitle{ color: rgba(243,230,214,.92); }
-    .modalClose{
-      border-radius: 12px;
-      padding: 8px 10px;
-      cursor:pointer;
-      font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-      font-size: 12px;
-      letter-spacing: .08em;
-      border: 1px solid rgba(139,11,20,.35);
-      background: transparent;
-      color: rgba(139,11,20,.85);
-    }
-    body.night .modalClose{
-      border-color: rgba(243,230,214,.22);
-      color: rgba(243,230,214,.85);
-    }
-    .modalBody{
-      padding: 14px 16px 16px;
-      font-size: 14px;
-      line-height: 1.6;
-      color: rgba(30,10,12,.82);
-    }
-    body.night .modalBody{ color: rgba(243,230,214,.78); }
-    .modalBody .muted{ opacity:.85; font-size: 13px; }
   </style>
 </head>
 
 <body>
-  <div class="petals" id="petals"></div>
 
   <div class="wrap">
     <div class="topline">02 | 14 | 2025</div>
@@ -502,24 +199,7 @@
     <section class="grid" id="grid"></section>
   </div>
 
-  <div class="modalBack" id="modalBack" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modalHead">
-        <h2 class="modalTitle" id="modalTitle">redeemed</h2>
-        <button class="modalClose" id="modalClose" type="button">close</button>
-      </div>
-      <div class="modalBody">
-        <div id="modalLine1"></div>
-        <div class="muted" id="modalLine2" style="margin-top:8px;"></div>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const storageKey = "valentine_coupons_v6";
-
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1468940626920865825/DKQgJ1jtS615nsA8UUwWShJT1nfPKocXkr9e15IbcUGSJVbHxwCSAyR4mQYuhIlGu7gL";
-
     const coupons = [
       { id:"movie_night", title:"movie night together", label:"this coupon is valid for", desc:"we pick a time, press play together, and stay on call." },
       { id:"cook_call", title:"cook the same recipe on a call", label:"this coupon is valid for", desc:"same recipe, same time, same taste test." },
@@ -529,288 +209,14 @@
       { id:"flirty_voice", title:"a flirty voice note", label:"this coupon is valid for", desc:"i record one and send it to you to replay whenever." },
       { id:"you_choose_movie", title:"you choose the movie", label:"this coupon is valid for", desc:"no debate, you pick and i commit." },
       { id:"marta_free_day", title:"marta free day", label:"this coupon is valid for", desc:"a day off duty if you want space, quiet, or just your own time." },
-      { id:"lingerie_show", title:"live lingerie show-off", label:"this coupon is valid for", desc:"the final one, unlock it by redeeming the others first.", isFinal:true }
+      { 
+        id:"whatever_you_want", 
+        title:"whatever you want", 
+        label:"this coupon is valid for", 
+        desc:"one wish, no questions asked. you decide the moment, the mood, and the plan.", 
+        isFinal:true 
+      }
     ];
-
-    const defaultState = () => Object.fromEntries(
-      coupons.map(c => [c.id, { scratched:false, redeemed:false, redeemedAt:null }])
-    );
-
-    let state = loadState();
-
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(storageKey);
-        if(!raw) return defaultState();
-        const parsed = JSON.parse(raw);
-        const base = defaultState();
-        for(const k in parsed){
-          if(base[k]) base[k] = { ...base[k], ...parsed[k] };
-        }
-        return base;
-      }catch{
-        return defaultState();
-      }
-    }
-
-    function saveState(){
-      localStorage.setItem(storageKey, JSON.stringify(state));
-    }
-
-    function allNonFinalRedeemed(){
-      return coupons.filter(c => !c.isFinal).every(c => state[c.id].redeemed);
-    }
-    function isLocked(c){
-      return c.isFinal && !allNonFinalRedeemed();
-    }
-
-    function formatDate(ts){
-      try{
-        return new Date(ts).toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-      }catch{
-        return "";
-      }
-    }
-
-    function spawnPetals(){
-      const wrap = document.getElementById("petals");
-      const count = 30;
-      const w = window.innerWidth;
-
-      for(let i=0;i<count;i++){
-        const p = document.createElement("div");
-        p.className = "petal";
-        const x = Math.random() * w;
-        const dx = (Math.random() * 260 - 130) + "px";
-        const rot = (Math.random() * 720 - 360) + "deg";
-        const dur = (Math.random() * 1.6 + 2.6);
-        const delay = (Math.random() * 0.25);
-        const size = Math.random() * 10 + 10;
-
-        p.style.left = x + "px";
-        p.style.setProperty("--dx", dx);
-        p.style.setProperty("--rot", rot);
-        p.style.animationDuration = dur + "s";
-        p.style.animationDelay = delay + "s";
-        p.style.width = size + "px";
-        p.style.height = (size * 0.75) + "px";
-        p.style.opacity = (Math.random() * 0.22 + 0.74).toFixed(2);
-
-        wrap.appendChild(p);
-        setTimeout(() => p.remove(), (dur + delay) * 1000 + 250);
-      }
-    }
-
-    const modalBack = document.getElementById("modalBack");
-    const modalClose = document.getElementById("modalClose");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalLine1 = document.getElementById("modalLine1");
-    const modalLine2 = document.getElementById("modalLine2");
-
-    function showModal(title, line1, line2){
-      modalTitle.textContent = title;
-      modalLine1.textContent = line1;
-      modalLine2.textContent = line2;
-      modalBack.classList.add("show");
-      modalBack.setAttribute("aria-hidden", "false");
-    }
-    function hideModal(){
-      modalBack.classList.remove("show");
-      modalBack.setAttribute("aria-hidden", "true");
-    }
-    modalClose.addEventListener("click", hideModal);
-    modalBack.addEventListener("click", (e) => { if(e.target === modalBack) hideModal(); });
-    window.addEventListener("keydown", (e) => { if(e.key === "Escape") hideModal(); });
-
-    async function notifyDiscord(couponTitle, ts){
-      try{
-        const iso = new Date(ts).toISOString();
-        const local = formatDate(ts);
-        const msg =
-          "coupon redeemed\n" +
-          "coupon: " + couponTitle + "\n" +
-          "time: " + local + " (" + iso + ")\n" +
-          "page: " + location.href;
-
-        await fetch(discordWebhookUrl, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ content: msg })
-        });
-      }catch{
-      }
-    }
-
-    function initScratch(layerEl, canvas, couponId, onReveal){
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      const dpr = window.devicePixelRatio || 1;
-
-      let W = 0, H = 0;
-      let isDown = false;
-      let last = null;
-      const brush = 26;
-
-      function sizeFromLayer(){
-        const rect = layerEl.getBoundingClientRect();
-        W = Math.max(10, rect.width);
-        H = Math.max(10, rect.height);
-
-        canvas.width = Math.floor(W * dpr);
-        canvas.height = Math.floor(H * dpr);
-        ctx.setTransform(dpr,0,0,dpr,0,0);
-      }
-
-      function drawLayer(){
-        ctx.globalCompositeOperation = "source-over";
-        ctx.clearRect(0,0,W,H);
-
-        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--scratch").trim();
-        ctx.fillRect(0,0,W,H);
-
-        ctx.fillStyle = "rgba(0,0,0,.08)";
-        for(let i=0;i<320;i++){
-          const x = Math.random()*W, y = Math.random()*H;
-          ctx.fillRect(x,y,1,1);
-        }
-
-        ctx.strokeStyle = "rgba(139,11,20,.22)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(8,8,W-16,H-16);
-      }
-
-      function pos(e){
-        const r = canvas.getBoundingClientRect();
-        const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
-        const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
-        return { x, y };
-      }
-
-      function scratchAt(p){
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, brush, 0, Math.PI*2);
-        ctx.fill();
-      }
-
-      function scratchLine(a,b){
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const dist = Math.hypot(dx,dy);
-        const step = Math.max(2, brush/2);
-        const n = Math.ceil(dist/step);
-        for(let i=0;i<=n;i++){
-          scratchAt({ x: a.x + dx*(i/n), y: a.y + dy*(i/n) });
-        }
-      }
-
-      function clearedRatio(){
-        const data = ctx.getImageData(0,0,W,H).data;
-        let cleared = 0, total = 0;
-        const step = 14;
-        for(let y=0;y<H;y+=step){
-          for(let x=0;x<W;x+=step){
-            const idx = (y*W + x)*4 + 3;
-            total++;
-            if(data[idx] < 40) cleared++;
-          }
-        }
-        return cleared / total;
-      }
-
-      function revealInstant(){
-        layerEl.style.display = "none";
-        layerEl.style.pointerEvents = "none";
-      }
-
-      function maybeReveal(){
-        if(state[couponId].scratched) return;
-        if(clearedRatio() >= 0.08){
-          state[couponId].scratched = true;
-          saveState();
-          revealInstant();
-          onReveal();
-        }
-      }
-
-      function down(e){
-        if(state[couponId].scratched) return;
-        isDown = true;
-        last = pos(e);
-        scratchAt(last);
-        maybeReveal();
-        e.preventDefault();
-      }
-
-      function move(e){
-        if(!isDown || state[couponId].scratched) return;
-        const p = pos(e);
-        scratchLine(last, p);
-        last = p;
-        maybeReveal();
-        e.preventDefault();
-      }
-
-      function up(){
-        isDown = false;
-        last = null;
-      }
-
-      canvas.addEventListener("mousedown", down);
-      canvas.addEventListener("mousemove", move);
-      window.addEventListener("mouseup", up);
-
-      canvas.addEventListener("touchstart", down, { passive:false });
-      canvas.addEventListener("touchmove", move, { passive:false });
-      window.addEventListener("touchend", up);
-
-      function init(){
-        sizeFromLayer();
-        drawLayer();
-        canvas.style.pointerEvents = "auto";
-      }
-
-      requestAnimationFrame(() => {
-        init();
-        if(state[couponId].scratched){
-          revealInstant();
-        }
-      });
-
-      window.addEventListener("resize", () => {
-        if(state[couponId].scratched){
-          revealInstant();
-          return;
-        }
-        requestAnimationFrame(() => {
-          init();
-        });
-      });
-    }
-
-    async function redeem(c){
-      if(isLocked(c)) return;
-      if(!state[c.id].scratched) return;
-      if(state[c.id].redeemed) return;
-
-      const ts = Date.now();
-      state[c.id].redeemed = true;
-      state[c.id].redeemedAt = ts;
-      saveState();
-
-      spawnPetals();
-
-      showModal(
-        "redeemed",
-        c.title + ", schedule whenever you want",
-        "one use only, this coupon is now blocked"
-      );
-
-      if(c.id === "lingerie_show"){
-        document.body.classList.add("night");
-      }
-
-      await notifyDiscord(c.title, ts);
-      render();
-    }
 
     const grid = document.getElementById("grid");
 
@@ -818,12 +224,8 @@
       grid.innerHTML = "";
 
       for(const c of coupons){
-        const locked = isLocked(c);
-        const redeemed = state[c.id].redeemed;
-        const scratched = state[c.id].scratched;
-
         const card = document.createElement("article");
-        card.className = "coupon" + (redeemed ? " redeemed" : "") + (locked ? " locked" : "");
+        card.className = "coupon";
 
         const ticket = document.createElement("div");
         ticket.className = "ticket";
@@ -831,135 +233,24 @@
         const main = document.createElement("div");
         main.className = "main";
 
-        const notchL = document.createElement("div");
-        notchL.className = "notch left";
-        const notchR = document.createElement("div");
-        notchR.className = "notch right";
-        main.appendChild(notchL);
-        main.appendChild(notchR);
-
-        const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = c.label;
-        main.appendChild(label);
-
-        const title = document.createElement("h3");
-        title.className = "title";
-        title.textContent = c.title;
-        main.appendChild(title);
-
-        const desc = document.createElement("p");
-        desc.className = "desc";
-        desc.textContent = c.desc;
-        main.appendChild(desc);
-
-        const footerline = document.createElement("div");
-        footerline.className = "footerline";
-
-        const status = document.createElement("div");
-        status.className = "status";
-
-        if(locked){
-          status.textContent = "status: locked";
-        }else if(redeemed){
-          status.textContent = "status: redeemed " + formatDate(state[c.id].redeemedAt);
-        }else if(scratched){
-          status.textContent = "status: revealed";
-        }else{
-          status.textContent = "status: hidden";
-        }
-
-        const btn = document.createElement("button");
-        btn.className = "btn";
-        btn.type = "button";
-        btn.textContent = "redeem";
-        btn.disabled = locked || redeemed || !scratched;
-        btn.addEventListener("click", () => redeem(c));
-
-        footerline.appendChild(status);
-        footerline.appendChild(btn);
-        main.appendChild(footerline);
-
-        const stub = document.createElement("div");
-        stub.className = "stub";
-
-        const stubTop = document.createElement("div");
-        stubTop.className = "stubTop";
-
-        const stubTag = document.createElement("div");
-        stubTag.className = "stubTag";
-        stubTag.textContent = "love coupon";
-
-        const barcode = document.createElement("div");
-        barcode.className = "barcode";
-
-        stubTop.appendChild(stubTag);
-        stubTop.appendChild(barcode);
-
-        const stubBottom = document.createElement("div");
-        stubBottom.className = "stubBottom";
-        stubBottom.textContent = "valid anytime";
-
-        stub.appendChild(stubTop);
-        stub.appendChild(stubBottom);
+        main.innerHTML = `
+          <div class="label">${c.label}</div>
+          <h3 class="title">${c.title}</h3>
+          <p class="desc">${c.desc}</p>
+          <div class="footerline">
+            <div class="status">status: hidden</div>
+            <button class="btn">redeem</button>
+          </div>
+        `;
 
         ticket.appendChild(main);
-        ticket.appendChild(stub);
-
-        const stamp = document.createElement("div");
-        stamp.className = "stamp";
-        stamp.textContent = "redeemed";
-
         card.appendChild(ticket);
-        card.appendChild(stamp);
-
-        const lockedOverlay = document.createElement("div");
-        lockedOverlay.className = "lockedOverlay";
-        const lockedCard = document.createElement("div");
-        lockedCard.className = "lockedCard";
-        const lockedTitle = document.createElement("div");
-        lockedTitle.className = "lockedTitle";
-        lockedTitle.textContent = "locked";
-        const lockedSub = document.createElement("p");
-        lockedSub.className = "lockedSub";
-        lockedSub.textContent = "redeem all other coupons to unlock the final one";
-        lockedCard.appendChild(lockedTitle);
-        lockedCard.appendChild(lockedSub);
-        lockedOverlay.appendChild(lockedCard);
-        card.appendChild(lockedOverlay);
-
-        if(!scratched && !redeemed){
-          const layer = document.createElement("div");
-          layer.className = "scratchLayer";
-
-          const canvas = document.createElement("canvas");
-          canvas.className = "scratchCanvas";
-          canvas.setAttribute("aria-label", "scratch coupon");
-
-          const hint = document.createElement("div");
-          hint.className = "scratchHint";
-          hint.textContent = locked ? "locked" : "scratch to reveal";
-
-          layer.appendChild(canvas);
-          layer.appendChild(hint);
-          card.appendChild(layer);
-
-          if(locked){
-            canvas.style.pointerEvents = "none";
-          }else{
-            initScratch(layer, canvas, c.id, () => render());
-          }
-        }
-
         grid.appendChild(card);
-      }
-
-      if(state["lingerie_show"]?.redeemed){
-        document.body.classList.add("night");
       }
     }
 
     render();
   </script>
+
 </body>
 </html>
